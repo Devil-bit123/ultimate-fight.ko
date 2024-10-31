@@ -27,4 +27,5 @@ Route::post('/logout', 'App\Http\Controllers\AccessController@logout');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/personajes', [PersonajesController::class, 'index']);
     Route::post('/personajes', [PersonajesController::class, 'store']);
+    Route::put('/personajes', [PersonajesController::class, 'store']);
 });
