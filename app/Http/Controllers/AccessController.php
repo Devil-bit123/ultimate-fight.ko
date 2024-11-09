@@ -27,6 +27,44 @@ class AccessController extends Controller
      */
 
 
+    /**
+     * @OA\Post(
+     *     path="/api/usuarios",
+     *     tags={"Usuarios"},
+     *     summary="Crear un nuevo usuario",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "password"},
+     *             @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *             @OA\Property(property="email", type="string", example="juan.perez@example.com"),
+     *             @OA\Property(property="password", type="string", example="contraseñaSegura"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuario creado con éxito",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *                 @OA\Property(property="email", type="string", example="juan.perez@example.com"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-10-30T12:00:00Z"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-10-30T12:00:00Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Error de validación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="object",
+     *                 @OA\Property(property="name", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="email", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="password", type="array", @OA\Items(type="string"))
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
 
