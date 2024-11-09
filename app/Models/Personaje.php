@@ -27,13 +27,18 @@ class Personaje extends Model
         'habilidades'
     ];
 
-    static $rules =[
+    static $rules = [
         'nombre' => 'required|string|max:255',
-        'vida' => 'integer|min:0',
-        'ataque' => 'integer|min:0',
-        'defensa' => 'integer|min:0',
-        'velocidad' => 'integer|min:0',
-        'habilidades' => 'nullable|array'
+        'vida' => 'integer|min:130|max:150',
+        'ataque' => 'integer|min:25|max:45',
+        'defensa' => 'integer|min:20|max:50',
+        'velocidad' => 'integer|min:70|max:100',
+        'habilidades' => 'nullable|array',
+        'habilidades.puño_derecho' => 'integer|min:20|max:50',
+        'habilidades.puño_izquierdo' => 'integer|min:20|max:50',
+        'habilidades.patada_derecha' => 'integer|min:20|max:50',
+        'habilidades.patada_izquierda' => 'integer|min:20|max:50',
+        'habilidades.ataque_especial' => 'integer|min:30|max:80',
     ];
 
 
