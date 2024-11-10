@@ -18,14 +18,7 @@ class Personaje extends Model
      * habilidades => array de habilidades especiales del personaje
      */
 
-    protected $fillable = [
-        'nombre',
-        'vida',
-        'ataque',
-        'defensa',
-        'velocidad',
-        'habilidades'
-    ];
+    protected $fillable = ['nombre', 'vida', 'miss_percent', 'habilidades'];
 
     static $rules = [
         'nombre' => 'required|string|max:255',
@@ -47,16 +40,19 @@ class Personaje extends Model
         'habilidades' => 'array',
     ];
 
-    public function recibirDanio(int $danio)
+    // Relación muchos a muchos con Sala
+    public function salas()
     {
-        $danioRecibido = max(0, $danio - $this->defensa);
-        $this->vida = max(0, $this->vida - $danioRecibido);
-        $this->save();
+        return $this->belongsToMany(Sala::class, 'personaje_sala', 'personaje_id', 'sala_id')
+            ->withPivot('jugador_id') // Si deseas acceder al jugador asociado
+            ->withTimestamps();
     }
 
-    public function atacar(Personaje $objetivo)
+    // Relación muchos a muchos con User (jugadores)
+    public function jugadores()
     {
-        $objetivo->recibirDanio($this->ataque);
+        return $this->belongsToMany(User::class, 'personaje_sala', 'personaje_id', 'jugador_id')
+            ->withPivot('sala_id') // Si deseas acceder a la sala relacionada
+            ->withTimestamps();
     }
-
 }

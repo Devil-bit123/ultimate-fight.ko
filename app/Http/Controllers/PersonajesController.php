@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sala;
 use App\Models\Personaje;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,7 +35,7 @@ class PersonajesController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/personajes",
+     *     path="api/personajes",
      *     tags={"Personajes"},
      *     summary="Obtener lista de personajes",
      *     @OA\Response(
@@ -49,175 +51,131 @@ class PersonajesController extends Controller
         return response()->json(['personajes' => $personajes], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     /**
      * @OA\Post(
-     *     path="/personajes",
-     *     tags={"Personajes"},
+     *     path="/api/personajes",
      *     summary="Crear un nuevo personaje",
+     *     description="Crea un personaje con un nombre, vida, porcentaje de fallos y habilidades.",
+     *     tags={"Personajes"},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Personaje")
+     *         description="Datos necesarios para crear un personaje",
+     *         @OA\JsonContent(
+     *             required={"nombre", "vida", "miss_percent", "habilidades"},
+     *             @OA\Property(property="nombre", type="string", example="Ezra Thompson", description="Nombre del personaje"),
+     *             @OA\Property(property="vida", type="integer", example=150, description="Cantidad de vida del personaje"),
+     *             @OA\Property(property="miss_percent", type="integer", example=28, description="Porcentaje de fallo en ataques del personaje"),
+     *             @OA\Property(property="habilidades", type="object", example={"punio_derecho": 45, "patada_derecha": 60, "ataque_especial": 55, "punio_izquierdo": 39, "patada_izquierda": 34}, description="Objeto con las habilidades del personaje")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="Personaje creado con éxito",
-     *         @OA\JsonContent(ref="#/components/schemas/Personaje")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="personaje",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=4),
+     *                 @OA\Property(property="nombre", type="string", example="Ezra Thompson"),
+     *                 @OA\Property(property="vida", type="integer", example=150),
+     *                 @OA\Property(property="miss_percent", type="integer", example=28),
+     *                 @OA\Property(property="habilidades", type="object", example={"punio_derecho": 45, "patada_derecha": 60, "ataque_especial": 55, "punio_izquierdo": 39, "patada_izquierda": 34}),
+     *                 @OA\Property(property="created_at", type="string", example="2024-11-09 23:53:57"),
+     *                 @OA\Property(property="updated_at", type="string", example="2024-11-10 00:48:33")
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Error de validación",
+     *         description="Datos de entrada no válidos"
+     *     )
+     * )
+     */
+    public function crearPersonaje(Request $request)
+    {
+        $personaje = Personaje::create([
+            'nombre' => $request->nombre,
+            'vida' => $request->vida,
+            'miss_percent' => $request->miss_percent,
+            'habilidades' => $request->habilidades,
+        ]);
+
+        return response()->json(['personaje' => $personaje]);
+    }
+
+
+    /**
+     * @OA\Post(
+     *     path="/api/salas/{uuid}/personajes",
+     *     summary="Asignar un personaje a una sala",
+     *     description="Este endpoint asigna un personaje y un jugador a una sala, y guarda los valores de vida y porcentaje de fallo del personaje.",
+     *     tags={"Salas", "Personajes"},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la sala",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos necesarios para asignar un personaje a una sala",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="object")
+     *             required={"sala_id", "personaje_id", "jugador_id"},
+     *             @OA\Property(property="sala_id", type="integer", example=1, description="ID de la sala"),
+     *             @OA\Property(property="personaje_id", type="integer", example=4, description="ID del personaje a asignar"),
+     *             @OA\Property(property="jugador_id", type="integer", example=7, description="ID del jugador que será asignado al personaje")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Personaje y jugador asignados correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Personaje y jugador asociados correctamente a la sala."),
+     *             @OA\Property(property="sala", type="object", ref="#/components/schemas/Sala"),
+     *             @OA\Property(property="personaje", type="object", ref="#/components/schemas/Personaje"),
+     *             @OA\Property(property="jugador", type="object", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Datos de entrada no válidos",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Error en los datos de entrada.")
      *         )
      *     )
      * )
      */
-    public function store(Request $request)
+    public function asignarPersonajeASala(Request $request, $uuid)
     {
-        $validator = Validator::make($request->all(), Personaje::$rules);
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
-        $personaje = Personaje::create($request->all());
-        return response()->json(['personaje' => $personaje], 201);
-    }
+        // Validación de los datos de entrada
+        $request->validate([
+            'sala_id' => 'required|exists:salas,id',
+            'personaje_id' => 'required|exists:personajes,id',
+            'jugador_id' => 'required|exists:users,id',
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    /**
-     * @OA\Get(
-     *     path="/personajes/{id}",
-     *     tags={"Personajes"},
-     *     summary="Obtener un personaje específico",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID del personaje",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Personaje encontrado",
-     *         @OA\JsonContent(ref="#/components/schemas/Personaje")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Personaje no encontrado"
-     *     )
-     * )
-     */
+        // Obtener los datos de la sala, personaje y jugador
+        $sala = Sala::find($request->sala_id);
+        $personaje = Personaje::find($request->personaje_id);
+        $jugador = User::find($request->jugador_id);
+        //dd($personaje);
+        // Asociar el personaje y el jugador a la sala, y agregar los valores de vida y daño
+        $sala->personajes()->attach($request->personaje_id, [
+            'jugador_id' => $request->jugador_id,
+            'vida_personaje' => $personaje->vida, // Usamos el valor por defecto de 100 si no existe
+            'miss_percent' => $personaje->miss_percent, // Usamos el valor por defecto de 10 si no existe
+        ]);
 
-    public function show($id)
-    {
-        $personaje = Personaje::find($id);
-        if (!$personaje) {
-            return response()->json(['error' => 'Personaje no encontrado'], 404);
-        }
-        return response()->json(['personaje' => $personaje], 200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    /**
-     * @OA\Put(
-     *     path="/personajes/{id}",
-     *     tags={"Personajes"},
-     *     summary="Actualizar un personaje existente",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID del personaje",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Personaje")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Personaje actualizado con éxito",
-     *         @OA\JsonContent(ref="#/components/schemas/Personaje")
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Error de validación"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Personaje no encontrado"
-     *     )
-     * )
-     */
-    public function update(Request $request, $id)
-    {
-        $personaje = Personaje::find($id);
-        if (!$personaje) {
-            return response()->json(['error' => 'Personaje no encontrado'], 404);
-        }
-
-        $validator = Validator::make($request->all(), Personaje::$rules);
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
-
-        $personaje->update($request->all());
-        return response()->json(['personaje' => $personaje], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    /**
-     *
-     * @OA\Delete(
-     *     path="/personajes/{id}",
-     *     tags={"Personajes"},
-     *     summary="Eliminar un personaje",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID del personaje",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Personaje eliminado con éxito"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Personaje no encontrado"
-     *     )
-     * )
-     */
-    public function destroy($id)
-    {
-        $personaje = Personaje::find($id);
-        if (!$personaje) {
-            return response()->json(['error' => 'Personaje no encontrado'], 404);
-        }
-
-        $personaje->delete();
-        return response()->json(null, 204);
+        return response()->json([
+            'message' => 'Personaje y jugador asociados correctamente a la sala.',
+            'sala' => $sala,
+            'personaje' => $personaje,
+            'jugador' => $jugador,
+        ], 200);
     }
 }
