@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePersonajesTable extends Migration
+class AddPersonajeSala extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreatePersonajesTable extends Migration
      */
     public function up()
     {
-        Schema::create('personajes', function (Blueprint $table) {
+        Schema::create('personaje_sala', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->integer('vida');
+            $table->foreignId('sala_id')->constrained('salas')->onDelete('cascade');
+            $table->foreignId('personaje_id')->constrained('personajes')->onDelete('cascade');
+            $table->foreignId('jugador_id')->constrained('users')->onDelete('cascade');
+            $table->integer('vida_personaje');
             $table->integer('miss_percent');
-            $table->json('habilidades');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreatePersonajesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('personajes');
+          Schema::dropIfExists('personaje_sala');
     }
 }

@@ -16,9 +16,9 @@ class CreateSalasTable extends Migration
         Schema::create('salas', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('jugador1_id')->constrained('users');
-            $table->foreignId('jugador2_id')->nullable()->constrained('users');
-            $table->string('estado')->default('abierta');
+            $table->foreignId('jugador1_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('jugador2_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->enum('estado', ['abierta', 'bloqueada', 'en_uso', 'terminada'])->default('abierta');
             $table->timestamps();
         });
     }
