@@ -10,12 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Sala extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'uuid',
-        'jugador1_id',
-        'jugador2_id',
-        'estado'
-    ];
+
+    protected $fillable = ['uuid', 'jugador1_id', 'jugador2_id', 'estado'];
 
     static $rules = [
         'uuid' => 'required|uuid',
@@ -24,23 +20,21 @@ class Sala extends Model
         'estado' => 'required|string|in:abierta,cerrada'
     ];
 
-    public function jugador1(): BelongsTo
+    // Relación muchos a muchos con Personaje
+    public function personajes()
     {
-        return $this->belongsTo(User::class, 'jugador1_id');
+        return $this->belongsToMany(Personaje::class, 'personaje_sala', 'sala_id', 'personaje_id')
+            ->withPivot('jugador_id') // Si deseas acceder a la relación del jugador
+            ->withTimestamps();
     }
 
-    public function jugador2(): BelongsTo
+    // Relación muchos a muchos con User (jugadores)
+    public function jugadores()
     {
-        return $this->belongsTo(User::class, 'jugador2_id');
+        return $this->belongsToMany(User::class, 'personaje_sala', 'sala_id', 'jugador_id')
+            ->withPivot('personaje_id') // Si deseas acceder al personaje relacionado
+            ->withTimestamps();
     }
 
-    public function jugador1Personaje(): BelongsTo
-    {
-        return $this->belongsTo(Personaje::class, 'jugador1_personaje_id');
-    }
 
-    public function jugador2Personaje(): BelongsTo
-    {
-        return $this->belongsTo(Personaje::class, 'jugador2_personaje_id');
-    }
 }
