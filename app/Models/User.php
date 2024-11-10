@@ -47,4 +47,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // Relación muchos a muchos con Sala a través de Personaje
+    public function salas()
+    {
+        return $this->belongsToMany(Sala::class, 'personaje_sala', 'jugador_id', 'sala_id')
+                    ->withPivot('personaje_id') // Si deseas acceder al personaje relacionado
+                    ->withTimestamps();
+    }
+
+    // Relación muchos a muchos con Personaje a través de Sala
+    public function personajes()
+    {
+        return $this->belongsToMany(Personaje::class, 'personaje_sala', 'jugador_id', 'personaje_id')
+                    ->withPivot('sala_id') // Si deseas acceder a la sala relacionada
+                    ->withTimestamps();
+    }
+
 }
