@@ -1,11 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+
+
 
 /**
  * @OA\Schema(
@@ -39,7 +43,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/usuarios",
+     *     path="/api/v1/usuarios",
      *     tags={"Usuarios"},
      *     summary="Crear un nuevo usuario",
      *     @OA\RequestBody(
@@ -97,7 +101,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/login",
+     *     path="api/v1/login",
      *     summary="Inicia sesión de un usuario y devuelve un token de autenticación.",
      *     description="Este endpoint permite que un usuario inicie sesión proporcionando su nombre de usuario y contraseña. Si las credenciales son correctas, se genera un token de autenticación usando Sanctum y se devuelve junto con los detalles del usuario.",
      *     operationId="login",
@@ -152,7 +156,7 @@ class AccessController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/logout",
+     *     path="api/v1/logout",
      *     summary="Cerrar sesión de un usuario y eliminar el token de autenticación.",
      *     description="Este endpoint permite que un usuario cierre sesión eliminando su token de autenticación, lo que invalida su acceso posterior hasta que se vuelva a generar un nuevo token.",
      *     operationId="logout",

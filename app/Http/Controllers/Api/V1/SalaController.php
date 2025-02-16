@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Models\Sala;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
 
 
 /**
@@ -28,7 +30,7 @@ class SalaController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/salas",
+     *     path="/api/v1/salas",
      *     summary="Obtener salas no bloqueadas",
      *     description="Recupera todas las salas cuyo estado no es 'bloqueada'.",
      *     tags={"Salas"},
@@ -63,7 +65,7 @@ class SalaController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/salas/encurso",
+     *     path="/api/v1/salas/encurso",
      *     summary="Obtener salas bloqueadas",
      *     description="Recupera todas las salas cuyo estado es 'bloqueada'.",
      *     tags={"Salas"},
@@ -98,7 +100,7 @@ class SalaController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/salas",
+     *     path="/api/v1/salas",
      *     summary="Crear una nueva sala",
      *     description="Crea una nueva sala con un jugador inicial y establece el estado en 'abierta'.",
      *     tags={"Salas"},
@@ -144,7 +146,7 @@ class SalaController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/salas/{uuid}/unirse",
+     *     path="/api/v1/salas/{uuid}/unirse",
      *     summary="Unirse a una sala",
      *     description="Permite a un jugador unirse a una sala abierta utilizando el UUID de la sala.",
      *     tags={"Salas"},

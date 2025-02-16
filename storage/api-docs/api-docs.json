@@ -1,0 +1,1030 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API V1",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v1"
+        }
+    ],
+    "paths": {
+        "/api/v1/usuarios": {
+            "post": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Crear un nuevo usuario",
+                "operationId": "c258a37e832400e908485281f32f7d18",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "juan.perez@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "contraseñaSegura"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario creado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Juan Pérez"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "juan.perez@example.com"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-10-30T12:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-10-30T12:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "password": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/v1/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Inicia sesión de un usuario y devuelve un token de autenticación.",
+                "description": "Este endpoint permite que un usuario inicie sesión proporcionando su nombre de usuario y contraseña. Si las credenciales son correctas, se genera un token de autenticación usando Sanctum y se devuelve junto con los detalles del usuario.",
+                "operationId": "login",
+                "requestBody": {
+                    "description": "Credenciales de inicio de sesión",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nombre de usuario del usuario",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "Contraseña del usuario",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inicio de sesión exitoso y token generado.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "description": "Token de autenticación generado para el usuario",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Invalid credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Cerrar sesión de un usuario y eliminar el token de autenticación.",
+                "description": "Este endpoint permite que un usuario cierre sesión eliminando su token de autenticación, lo que invalida su acceso posterior hasta que se vuelva a generar un nuevo token.",
+                "operationId": "logout",
+                "requestBody": {
+                    "description": "ID del usuario que desea cerrar sesión",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "ID del usuario que está cerrando sesión",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cierre de sesión exitoso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Solicitud incorrecta, no se proporcionó un ID de usuario válido.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Invalid user ID"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/v1/salas/{uuid}/atacar": {
+            "post": {
+                "tags": [
+                    "Ataques"
+                ],
+                "summary": "Realiza un ataque a otro jugador en la sala.",
+                "description": "Este endpoint permite que un jugador ataque a otro en una sala de juego. Se valida que el jugador no ataque a sí mismo, se verifica el estado de la sala, y se calcula el daño basado en la habilidad utilizada.",
+                "operationId": "atacar",
+                "requestBody": {
+                    "description": "Datos necesarios para realizar el ataque",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "sala_id",
+                                    "jugador_atacante_id",
+                                    "jugador_objetivo_id",
+                                    "habilidad"
+                                ],
+                                "properties": {
+                                    "sala_id": {
+                                        "description": "ID de la sala en la que se realiza el ataque",
+                                        "type": "integer"
+                                    },
+                                    "jugador_atacante_id": {
+                                        "description": "ID del jugador que realiza el ataque",
+                                        "type": "integer"
+                                    },
+                                    "jugador_objetivo_id": {
+                                        "description": "ID del jugador que será atacado",
+                                        "type": "integer"
+                                    },
+                                    "habilidad": {
+                                        "description": "Nombre de la habilidad utilizada en el ataque (ej. 'puño_derecho')",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "El ataque fue exitoso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ataque exitoso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en los datos proporcionados o el ataque falló.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El objetivo ha esquivado el ataque."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "La sala no fue encontrada.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sala no encontrada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/v1/personajes": {
+            "get": {
+                "tags": [
+                    "Personajes"
+                ],
+                "summary": "Obtener lista de personajes",
+                "operationId": "ac31ffa6fd9e836475aca77d16925650",
+                "responses": {
+                    "200": {
+                        "description": "Lista de personajes devuelta con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Personaje"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/personajes": {
+            "post": {
+                "tags": [
+                    "Personajes"
+                ],
+                "summary": "Crear un nuevo personaje",
+                "description": "Crea un personaje con un nombre, vida, porcentaje de fallos y habilidades.",
+                "operationId": "541defa3a880d2a2e3c2d7d245c80be8",
+                "requestBody": {
+                    "description": "Datos necesarios para crear un personaje",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "vida",
+                                    "miss_percent",
+                                    "habilidades"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "description": "Nombre del personaje",
+                                        "type": "string",
+                                        "example": "Ezra Thompson"
+                                    },
+                                    "vida": {
+                                        "description": "Cantidad de vida del personaje",
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "miss_percent": {
+                                        "description": "Porcentaje de fallo en ataques del personaje",
+                                        "type": "integer",
+                                        "example": 28
+                                    },
+                                    "habilidades": {
+                                        "description": "Objeto con las habilidades del personaje",
+                                        "type": "object",
+                                        "example": {
+                                            "punio_derecho": 45,
+                                            "patada_derecha": 60,
+                                            "ataque_especial": 55,
+                                            "punio_izquierdo": 39,
+                                            "patada_izquierda": 34
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Personaje creado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "personaje": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 4
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Ezra Thompson"
+                                                },
+                                                "vida": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                },
+                                                "miss_percent": {
+                                                    "type": "integer",
+                                                    "example": 28
+                                                },
+                                                "habilidades": {
+                                                    "type": "object",
+                                                    "example": {
+                                                        "punio_derecho": 45,
+                                                        "patada_derecha": 60,
+                                                        "ataque_especial": 55,
+                                                        "punio_izquierdo": 39,
+                                                        "patada_izquierda": 34
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2024-11-09 23:53:57"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "example": "2024-11-10 00:48:33"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos de entrada no válidos"
+                    }
+                }
+            }
+        },
+        "/api/v1/salas/{uuid}/personajes": {
+            "post": {
+                "tags": [
+                    "Salas",
+                    "Personajes"
+                ],
+                "summary": "Asignar un personaje a una sala",
+                "description": "Este endpoint asigna un personaje y un jugador a una sala, y guarda los valores de vida y porcentaje de fallo del personaje.",
+                "operationId": "9815f320f44c553b1b46c8c51dbb2d5b",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "UUID de la sala",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Datos necesarios para asignar un personaje a una sala",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "sala_id",
+                                    "personaje_id",
+                                    "jugador_id"
+                                ],
+                                "properties": {
+                                    "sala_id": {
+                                        "description": "ID de la sala",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "personaje_id": {
+                                        "description": "ID del personaje a asignar",
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "jugador_id": {
+                                        "description": "ID del jugador que será asignado al personaje",
+                                        "type": "integer",
+                                        "example": 7
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Personaje y jugador asignados correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Personaje y jugador asociados correctamente a la sala."
+                                        },
+                                        "sala": {
+                                            "$ref": "#/components/schemas/Sala"
+                                        },
+                                        "personaje": {
+                                            "$ref": "#/components/schemas/Personaje"
+                                        },
+                                        "jugador": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos de entrada no válidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error en los datos de entrada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/salas": {
+            "get": {
+                "tags": [
+                    "Salas"
+                ],
+                "summary": "Obtener salas no bloqueadas",
+                "description": "Recupera todas las salas cuyo estado no es 'bloqueada'.",
+                "operationId": "79600d627c2393b5bd4958c126e993c7",
+                "responses": {
+                    "200": {
+                        "description": "Lista de salas obtenida con éxito.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "salas": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Sala A"
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "example": "disponible"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron salas no bloqueadas."
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Salas"
+                ],
+                "summary": "Crear una nueva sala",
+                "description": "Crea una nueva sala con un jugador inicial y establece el estado en 'abierta'.",
+                "operationId": "0215164578dcfc36d3f003f7552b3642",
+                "requestBody": {
+                    "description": "Datos necesarios para crear una sala",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "jugador1_id"
+                                ],
+                                "properties": {
+                                    "jugador1_id": {
+                                        "description": "ID del jugador que crea la sala",
+                                        "type": "integer",
+                                        "example": 123
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sala creada con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "sala": {
+                                            "properties": {
+                                                "uuid": {
+                                                    "type": "string",
+                                                    "example": "a9b8c7d6-e5f4-3210-b9a8-c7d6e5f43210"
+                                                },
+                                                "jugador1_id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "estado": {
+                                                    "type": "string",
+                                                    "example": "['abierta', 'bloqueada', 'en_uso', 'terminada']"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos de entrada no válidos"
+                    }
+                }
+            }
+        },
+        "/api/v1/salas/encurso": {
+            "get": {
+                "tags": [
+                    "Salas"
+                ],
+                "summary": "Obtener salas bloqueadas",
+                "description": "Recupera todas las salas cuyo estado es 'bloqueada'.",
+                "operationId": "188293ece454467d93d26f9e4f6692aa",
+                "responses": {
+                    "200": {
+                        "description": "Lista de salas bloqueadas obtenida con éxito.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "salas": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Sala B"
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "example": "bloqueada"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron salas bloqueadas."
+                    }
+                }
+            }
+        },
+        "/api/v1/salas/{uuid}/unirse": {
+            "post": {
+                "tags": [
+                    "Salas"
+                ],
+                "summary": "Unirse a una sala",
+                "description": "Permite a un jugador unirse a una sala abierta utilizando el UUID de la sala.",
+                "operationId": "8b20df64e6b7dcb97613ba2cb17a463c",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "UUID de la sala a la que se desea unir",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "a9b8c7d6-e5f4-3210-b9a8-c7d6e5f43210"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Datos necesarios para unirse a la sala",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "jugador2_id"
+                                ],
+                                "properties": {
+                                    "jugador2_id": {
+                                        "description": "ID del jugador que se une a la sala",
+                                        "type": "integer",
+                                        "example": 456
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Jugador unido a la sala con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jugador unido a la sala."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Sala no válida o error en la solicitud",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El jugador no puede unirse a la sala."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/prueba": {
+            "get": {
+                "tags": [
+                    "Prueba"
+                ],
+                "summary": "Prueba",
+                "description": "Prueba",
+                "operationId": "0508673b6bb9114b0f4d2ca549d9e22a",
+                "responses": {
+                    "200": {
+                        "description": "Prueba",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Prueba"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 7
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "juan.perez@correo.com"
+                    }
+                },
+                "type": "object"
+            },
+            "Personaje": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Guerrero"
+                    },
+                    "vida": {
+                        "type": "integer",
+                        "maximum": 150,
+                        "minimum": 130,
+                        "example": 140
+                    },
+                    "ataque": {
+                        "type": "integer",
+                        "maximum": 45,
+                        "minimum": 25,
+                        "example": 35
+                    },
+                    "defensa": {
+                        "type": "integer",
+                        "maximum": 50,
+                        "minimum": 20,
+                        "example": 30
+                    },
+                    "velocidad": {
+                        "type": "integer",
+                        "maximum": 100,
+                        "minimum": 70,
+                        "example": 85
+                    },
+                    "habilidades": {
+                        "properties": {
+                            "puño_derecho": {
+                                "type": "integer",
+                                "maximum": 50,
+                                "minimum": 20,
+                                "example": 40
+                            },
+                            "puño_izquierdo": {
+                                "type": "integer",
+                                "maximum": 50,
+                                "minimum": 20,
+                                "example": 35
+                            },
+                            "patada_derecha": {
+                                "type": "integer",
+                                "maximum": 50,
+                                "minimum": 20,
+                                "example": 45
+                            },
+                            "patada_izquierda": {
+                                "type": "integer",
+                                "maximum": 50,
+                                "minimum": 20,
+                                "example": 30
+                            },
+                            "ataque_especial": {
+                                "type": "integer",
+                                "maximum": 80,
+                                "minimum": 30,
+                                "example": 60
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "creado_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-30T12:00:00Z"
+                    },
+                    "actualizado_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-30T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Sala": {
+                "required": [
+                    "uuid",
+                    "jugador1_id",
+                    "estado"
+                ],
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "example": "a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6"
+                    },
+                    "jugador1_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "jugador2_id": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "jugador1_personaje_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "jugador2_personaje_id": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "estado": {
+                        "type": "string",
+                        "example": "abierta"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-30T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-30T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Usuarios",
+            "description": "Usuarios"
+        },
+        {
+            "name": "Autenticación",
+            "description": "Autenticación"
+        },
+        {
+            "name": "Ataques",
+            "description": "Ataques"
+        },
+        {
+            "name": "Personajes",
+            "description": "Personajes"
+        },
+        {
+            "name": "Salas",
+            "description": "Salas"
+        },
+        {
+            "name": "Prueba",
+            "description": "Prueba"
+        }
+    ]
+}

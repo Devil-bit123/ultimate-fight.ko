@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Models\Sala;
-use App\Models\Personaje;
 use App\Models\User;
+use App\Models\Personaje;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+
+
 
 /**
  * @OA\Schema(
@@ -35,7 +38,7 @@ class PersonajesController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="api/personajes",
+     *     path="api/v1/personajes",
      *     tags={"Personajes"},
      *     summary="Obtener lista de personajes",
      *     @OA\Response(
@@ -54,7 +57,7 @@ class PersonajesController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/personajes",
+     *     path="/api/v1/personajes",
      *     summary="Crear un nuevo personaje",
      *     description="Crea un personaje con un nombre, vida, porcentaje de fallos y habilidades.",
      *     tags={"Personajes"},
@@ -108,7 +111,7 @@ class PersonajesController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/salas/{uuid}/personajes",
+     *     path="/api/v1/salas/{uuid}/personajes",
      *     summary="Asignar un personaje a una sala",
      *     description="Este endpoint asigna un personaje y un jugador a una sala, y guarda los valores de vida y porcentaje de fallo del personaje.",
      *     tags={"Salas", "Personajes"},

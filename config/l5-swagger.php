@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'L5 Swagger UI',
+                'title' => 'Api Documentation Ultimate fight',
             ],
 
             'routes' => [
@@ -81,7 +81,7 @@ return [
             /*
              * Absolute path to location where parsed annotations will be stored
              */
-            'docs' => storage_path('app'),
+            'docs' => storage_path('api-docs'),
 
             /*
              * Absolute path to directory where to export views
