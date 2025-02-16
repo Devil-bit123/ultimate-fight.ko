@@ -26,3 +26,6 @@ php /var/www/html/artisan config:cache
 
 echo "Caching routes..."
 php /var/www/html/artisan route:cache
+
+echo "Generating documentation..."
+php /var/www/html/artisan l5-swagger:generate
