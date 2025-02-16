@@ -12,7 +12,7 @@ if [ "$GENERATE_KEY" = true ]; then
     #mostrar la clave generada
     echo "Generating application key..."
     php /var/www/html/artisan key:generate
-    echo "APP_KEY=$(grep APP_KEY /var/www/html/.env)"
+    echo "APP_KEY=$(php /var/www/html/artisan env:get APP_KEY)"
 fi
 
 # Check if RUN_MIGRATIONS is set and true
