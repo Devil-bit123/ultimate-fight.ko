@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Models\Sala;
 use App\Models\Personaje;
@@ -9,13 +9,17 @@ use Illuminate\Http\Request;
 use App\Models\PersonajeSala;
 use App\Models\RegistroDeAtaque;
 use Faker\Provider\ar_EG\Person;
+use App\Http\Controllers\Controller;
+
+
+
 
 class BatallaController extends Controller
 {
 
     /**
      * @OA\Post(
-     *     path="api/salas/{uuid}/atacar",
+     *     path="api/v1/salas/{uuid}/atacar",
      *     summary="Realiza un ataque a otro jugador en la sala.",
      *     description="Este endpoint permite que un jugador ataque a otro en una sala de juego. Se valida que el jugador no ataque a sí mismo, se verifica el estado de la sala, y se calcula el daño basado en la habilidad utilizada.",
      *     operationId="atacar",
